@@ -47,7 +47,7 @@ const Questionnare = () => {
       hasAccordion: true,
       options: [
         {
-          accordionLabel: "Lebow College of Business",
+          accordionLabel: "Business",
           accordionOptions: [
             { id: "accounting", value: "accounting", label: "Accounting" },
             { id: "marketing", value: "marketing", label: "Marketing" },
@@ -55,7 +55,7 @@ const Questionnare = () => {
           ],
         },
         {
-          accordionLabel: "Westphal College of Art and Design",
+          accordionLabel: "Art and Design",
           accordionOptions: [
             {
               id: "graphicDesign",
@@ -102,7 +102,7 @@ const Questionnare = () => {
         </div>
     
       <div className="mainContent mainContentChooseTour">
-      <h1>Tour Questionnare</h1>
+      <h1>Tour Questionnaire</h1>
       <p>
       Answer <b>8 questions </b> below to build your own tour!
       </p>

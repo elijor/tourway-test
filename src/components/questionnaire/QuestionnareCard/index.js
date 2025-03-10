@@ -1,14 +1,22 @@
-import { React, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import Checkbox from "../Checkbox";
 import Radio from "../Radio";
 import styles from "./styles.module.scss";
 import ProgressBar from "../ProgressBar";
 import Dropdown from "../Dropdown";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightLong } from "@fortawesome/free-solid-svg-icons";
 
 const QuestionnareCard = ({ questions }) => {
   const navigate = useNavigate();
+  // Sort questions by ID before using them
+  const sortedQuestions = [...questions].sort((a, b) => {
+    // If questions have numeric IDs
+    return parseInt(a.id) - parseInt(b.id);
+    // Or if IDs are strings: return a.id.localeCompare(b.id);
+  });
+  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
 
@@ -46,12 +54,12 @@ const QuestionnareCard = ({ questions }) => {
     setCurrentQuestionIndex(index);
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = sortedQuestions[currentQuestionIndex];
 
   return (
     <>
       <ProgressBar
-        questions={questions}
+        questions={sortedQuestions}
         currentQuestion={currentQuestionIndex}
         onStepClick={handleStepClick}
       />
@@ -89,21 +97,16 @@ const QuestionnareCard = ({ questions }) => {
             )}
           </div>
           <div className={styles.navigationButtons}>
-            {/* {currentQuestionIndex > 0 && (
-              <button type="button" onClick={handleBack}>
-                Back
-              </button>
-            )} */}
-            {currentQuestionIndex < questions.length - 1 ? (
+            {currentQuestionIndex < sortedQuestions.length - 1 ? (
               <button
                 type="button"
                 className={styles.nextButton}
                 onClick={handleNext}
               >
-                Next
+                Next <span> <FontAwesomeIcon icon={faArrowRightLong}/> </span>
               </button>
             ) : (
-              <button type="submit">Submit</button>
+              <button type="submit">Submit <span> <FontAwesomeIcon icon={faArrowRightLong}/></span></button>
             )}
           </div>
         </div>

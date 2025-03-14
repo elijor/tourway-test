@@ -51,7 +51,8 @@ h4 {
   top: 90px;
 }
 
-.mainContentChooseTour > h1, .mainContentChooseTour > p  {
+.mainContentChooseTour > h1,
+.mainContentChooseTour > p {
   color: $dark;
 }
 
@@ -282,7 +283,7 @@ h4 {
   position: fixed;
   display: flex;
   flex-direction: column;
-  gap: .5em;
+  gap: 1em;
   width: 100%;
   z-index: 10;
   bottom: 1rem;
@@ -294,8 +295,6 @@ h4 {
   z-index: 10;
   width: 100%;
 }
-
-
 
 .mainContentLogin,
 .mainContentSignUp {
@@ -389,7 +388,7 @@ h4 {
 // TOUR SUMMARY
 .mainContentSummary {
   top: 164px;
-  padding: 1rem;
+  padding: 1rem 1rem 4.75rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -402,16 +401,24 @@ h4 {
 
 .tourSummary p {
   color: $dark;
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
+.tourSummary > p { 
+  margin-bottom: 1rem
+}
+
+
+
 .headerGraphicSummary img {
-  width: 140px;
+  min-width: 110px;
+  width: 20%;
+  max-width: 140px;
 }
 
 .headerGraphicSummary {
-  right: 16px;
+  right: 0;
   top: 60px;
 }
 
@@ -429,11 +436,14 @@ h4 {
 
 .headerTextSummary h4 {
   font-size: 1.25rem;
+  background-color: #07294dc0;
+  width: fit-content;
 }
 
 .headerTextSummary p {
   font-size: 1rem;
   line-height: 140%;
+  background-color: #07294dc0;
 }
 
 // NEXT STEPS AND RESOURCES
@@ -448,11 +458,17 @@ h4 {
 }
 
 .resourcesContainer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); // 2 columns
-  grid-template-rows: repeat(2, auto); // 2 rows (auto height based on content)
-  gap: 1rem; // Adjust spacing as needed
+  // display: grid;
+  // grid-template-columns: repeat(2, 1fr); // 2 columns
+  // grid-template-rows: repeat(2, auto); // 2 rows (auto height based on content)
+  // gap: 1rem; // Adjust spacing as needed
+  // width: calc(100%);
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+
 }
 
 .CTA-1 {
@@ -551,7 +567,6 @@ h4 {
   z-index: 1;
   overflow: unset;
   top: 110px;
- 
 }
 .mapMainContent > * {
   width: calc(100% - 2rem);
@@ -657,7 +672,6 @@ h4 {
   height: fit-content;
 }
 
-
 .onScroll .CTA {
   position: absolute;
   top: calc(100% - 23vh);
@@ -666,16 +680,16 @@ h4 {
 .testingBtns {
   z-index: 10;
   position: absolute;
-  top: 25%
+  top: 25%;
 }
-.testingBtns:first-of-type { 
+.testingBtns:first-of-type {
   left: 10px;
 }
 
-.testingBtns:nth-of-type(2) { 
+.testingBtns:nth-of-type(2) {
   left: 70px;
 }
 
-.testingBtns:nth-of-type(3) { 
+.testingBtns:nth-of-type(3) {
   left: 150px;
 }

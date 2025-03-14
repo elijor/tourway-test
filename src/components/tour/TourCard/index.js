@@ -1,4 +1,5 @@
 import { React, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabaseClient";
 import ImageSlider from "../ImageSlider";
 import styles from "./styles.module.scss";
@@ -6,7 +7,6 @@ import Header from "../../../components/navigation/Header";
 import blueBG from "../../../assets/imgs/DrexelBlue.svg";
 import CircleButton from "../../../components/common/CircleButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate } from "react-router-dom";
 import {
   faArrowLeftLong,
   faArrowRightLong,
@@ -16,11 +16,31 @@ import { faX } from "@fortawesome/free-solid-svg-icons";
 import SpecialFacilities from "../SpecialFacilities";
 import ScrollButtons from "../../navigation/ScrollButtons";
 import VoiceoverIcon from "../../../assets/icons/voiceover.svg";
-import NotesIcon from "../../../assets/icons/notes-outline.svg";
+import NotesIcon from "../../../assets/icons/notesblack.svg";
 import Button from "../../common/Button";
 
-const TourCard = ({ tag, closeCard, viewNextStop, currentStopNumber }) => {
+const TourCard = ({
+  tag,
+  closeCard,
+  viewNextStop,
+  currentStopNumber,
+  currentStopIndex,
+  totalStops,
+}) => {
   const [cardData, setCardData] = useState(null);
+  const [majors, setMajors] = useState([]);
+  const [selectedMajor, setSelectedMajor] = useState(null);  
+  const navigate = useNavigate();
+
+  const isLastStop = currentStopIndex === totalStops - 1;
+
+  const handleNextClick = () => {
+    if (isLastStop) {
+      navigate("/tour/summary"); // Navigate to summary page
+    } else {
+      viewNextStop(); // Go to next stop
+    }
+  };
 
   const tagId = tag;
 
@@ -59,8 +79,38 @@ const TourCard = ({ tag, closeCard, viewNextStop, currentStopNumber }) => {
 
   const headers = cardData ? getHeadersFromDatabase(cardData) : [];
 
-  const navigate = useNavigate();
+  const fetchMajors = async (tag) => {
+    console.log(cardData?.catTags);
+    if (!tag || cardData?.catTags !== "Academic") return;
+    console.log("fetching...", tag);
+    const { data, error } = await supabase
+      .from("majorsContent")
+      .select("*")
+      .like("id", `${tag}%`); // Match IDs starting with `tag`\\
+
+    console.log("majros", data);
+
+    if (error) {
+      console.error("Error fetching majors:", error);
+    } else {
+      setMajors(data);
+    }
+  };
+
+  useEffect(() => {
+    if (cardData && cardData.tag && cardData.catTags === "Academic") {
+      fetchMajors(cardData.tag);
+    }
+  }, [cardData]);
+
+  const handleMajorClick = (major) => {
+    // Set selectedMajor to the clicked major's id or null if it's already selected
+    setSelectedMajor(major.id);
+    console.log("set");
+  };
+
   console.log(cardData);
+  console.log(majors);
 
   return (
     <>
@@ -106,8 +156,8 @@ const TourCard = ({ tag, closeCard, viewNextStop, currentStopNumber }) => {
             <div className={styles.notesButton}>
               <CircleButton
                 icon={<img src={NotesIcon} />}
-                bgColor="#0BA3A8"
-                iconColor="white"
+                bgColor="#ffc600"
+                iconColor="black"
                 onClick={() => navigate("#")}
               />
             </div>
@@ -126,7 +176,7 @@ const TourCard = ({ tag, closeCard, viewNextStop, currentStopNumber }) => {
           {/* For every image, put it in the slide */}
           {/* For every image, put it in the slide */}
           {cardData?.headerImages?.length > 0 ? ( // Check if there are images
-            cardData.headerImages.length === 1 ? ( // Check if there's exactly 1 image
+            cardData.headerImages?.length === 1 ? ( // Check if there's exactly 1 image
               <img src={cardData.headerImages[0]} alt="Single Image" /> // Render a single img element
             ) : (
               <ImageSlider images={cardData.headerImages} /> // Render the image slider for multiple images
@@ -146,13 +196,60 @@ const TourCard = ({ tag, closeCard, viewNextStop, currentStopNumber }) => {
 
           <div>
             <h3>{cardData?.header1}</h3>
-            {cardData?.body1.length > 0
+            {cardData?.body1?.length > 0
               ? cardData.body1.map((item) => <p>{item}</p>)
               : null}
           </div>
+          {majors.length > 0 && (
+              <div>
+                <h3>Related Majors</h3>
+                <div className={styles.scrollButtonsHolder}>
+                  {majors.map((major, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleMajorClick(major)}
+                      className={selectedMajor === major.id ? styles.active : ""}
+                    >
+                      {major.name}
+                    </button>
+                  ))}
+                </div>
+                {selectedMajor && (
+                  <div>
+                    {majors
+                      .filter((major) => major.id === selectedMajor)
+                      .map((major) => {
+                        const content = Array.isArray(major.content)
+                          ? major.content.map((text, index) => <p key={index}>{text}</p>)
+                          : <p>{major.content || "No additional details available."}</p>;
+
+                        const images = major?.imgs?.length > 0 ? (
+                          major.imgs.length === 1 ? (
+                            <img
+                              src={major.imgs[0]}
+                              alt={`${major.name || 'Major'} image`}
+                              className={styles.majorImage || ''}
+                            />
+                          ) : (
+                            <ImageSlider images={major.imgs} />
+                          )
+                        ) : null;
+
+                        return (
+                          <div key={major.id}>
+                            {images}
+
+                            {content}
+                          </div>
+                        );
+                      })}
+                  </div>
+                )}
+              </div>
+            )}
           <div>
             <h3>{cardData?.header2}</h3>
-            {cardData?.body2.length > 0
+            {cardData?.body2?.length > 0
               ? cardData.body2.map((item) => <p>{item}</p>)
               : null}
             {/* quad images + facilities */}
@@ -199,17 +296,20 @@ const TourCard = ({ tag, closeCard, viewNextStop, currentStopNumber }) => {
           <div>
             <h3>{cardData?.header4}</h3>
             {cardData?.body4?.length > 0
-              ? cardData.body4.map((item) => <p>{item}</p>)
+              ? cardData.body4?.map((item) => <p>{item}</p>)
               : null}
           </div>
         </div>
         <div class="CTAsingle">
+          <p className={styles.tourNum}>
+            <b>{currentStopNumber}/{totalStops}</b> stops
+          </p>
           <Button
-            text="NEXT STOP"
+            text={isLastStop ? "Finish Tour" : "Next Stop"}
             icon={<FontAwesomeIcon icon={faArrowRightLong} />}
             bgColor="#07294d"
             borderColor="#07294d"
-            onClick={() => viewNextStop()}
+            onClick={handleNextClick}
           />
         </div>
       </div>

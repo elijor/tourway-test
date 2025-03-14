@@ -16,7 +16,7 @@ const QuestionnareCard = ({ questions }) => {
     return parseInt(a.id) - parseInt(b.id);
     // Or if IDs are strings: return a.id.localeCompare(b.id);
   });
-  
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
 
@@ -55,6 +55,10 @@ const QuestionnareCard = ({ questions }) => {
   };
 
   const currentQuestion = sortedQuestions[currentQuestionIndex];
+  const currentQuestionNumber = currentQuestionIndex + 1;
+  console.log(currentQuestionNumber);
+
+  console.log(selectedOptions);
 
   return (
     <>
@@ -98,17 +102,33 @@ const QuestionnareCard = ({ questions }) => {
           </div>
           <div className={styles.navigationButtons}>
             <div className={styles.btnsWhiteBg}>
-            {currentQuestionIndex < sortedQuestions.length - 1 ? (
-              <button
-                type="button"
-                className={styles.nextButton}
-                onClick={handleNext}
-              >
-                Next <span> <FontAwesomeIcon icon={faArrowRightLong}/> </span>
-              </button>
-            ) : (
-              <button type="submit">Submit <span> <FontAwesomeIcon icon={faArrowRightLong}/></span></button>
-            )}
+              <p className={styles.questNum}>
+                <b>
+                  {currentQuestionNumber}/{questions.length}
+                </b>
+                questions
+              </p>
+              {currentQuestionIndex < sortedQuestions.length - 1 ? (
+                <button
+                  type="button"
+                  className={styles.nextButton}
+                  onClick={handleNext}
+                >
+                  Next{" "}
+                  <span>
+                    {" "}
+                    <FontAwesomeIcon icon={faArrowRightLong} />{" "}
+                  </span>
+                </button>
+              ) : (
+                <button type="submit">
+                  Submit{" "}
+                  <span>
+                    {" "}
+                    <FontAwesomeIcon icon={faArrowRightLong} />
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -21,7 +21,6 @@ import TourList from "../components/tour/TourList";
 import TourEditModal from "../components/modals/TourEditModal";
 import ShareModal from "../components/modals/ShareModal";
 
-
 const TourOverview = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const [formData, setFormData] = useState(null);
@@ -30,6 +29,9 @@ const TourOverview = () => {
   const [stopCount, setStopCount] = useState(0);
   const [editMode, setEditMode] = useState(false); // Edit mode state
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isShareModalOpenAndBegin, setIsShareModalOpenAndBegin] =
+    useState(false);
+  const [stops, setStops] = useState([]);
 
   const navigate = useNavigate();
 
@@ -45,8 +47,6 @@ const TourOverview = () => {
       console.log("Querying with form data:", formData);
     }
   }, [formData]);
-
-  const [stops, setStops] = useState([]);
 
   useEffect(() => {
     const fetchStops = async () => {
@@ -65,12 +65,12 @@ const TourOverview = () => {
     if (formData && Object.keys(formData).length > 0 && stops.length > 0) {
       // Will hold unique stops by their tag
       const uniqueStopsByTag = new Map();
-  
+
       Object.values(formData).forEach((tags) => {
         tags.forEach((tag) => {
           // Try to extract school prefix (for major-based matching)
           const schoolPrefix = tag.match(/^[A-Z]+/)?.[0];
-          
+
           if (schoolPrefix && /^[A-Z]+[a-z]+/.test(tag)) {
             // This is a major ID with school prefix pattern
             const matchedStop = stops.find((stop) => stop.tag === schoolPrefix);
@@ -86,7 +86,7 @@ const TourOverview = () => {
           }
         });
       });
-  
+
       // Convert to array for display
       const matched = Array.from(uniqueStopsByTag.values());
       setMatchedStops(matched);
@@ -135,6 +135,7 @@ const TourOverview = () => {
 
   const handleCloseShareModal = () => {
     setIsShareModalOpen(false);
+    setIsShareModalOpenAndBegin(false);
   };
 
   return (
@@ -162,7 +163,6 @@ const TourOverview = () => {
             bgColor="#D0E4F6"
             iconColor="#07294D"
             onClick={() => setIsShareModalOpen(true)}
-
           />
         </div>
         <TourTimeandStops
@@ -177,6 +177,7 @@ const TourOverview = () => {
           editMode={editMode}
           onDeleteClick={handleDeleteClick}
           hasEditMode
+          yellowCircles
         />
         <div className="CTAdouble">
           {/* Add Stop Button */}
@@ -196,7 +197,7 @@ const TourOverview = () => {
             icon={<FontAwesomeIcon icon={faArrowRightLong} />}
             bgColor="#07294d"
             borderColor="#07294d"
-            onClick={handleStopClick}
+            onClick={setIsShareModalOpenAndBegin}
           />
         </div>
       </div>
@@ -208,8 +209,14 @@ const TourOverview = () => {
       {isShareModalOpen && (
         <ShareModal closeShareModal={handleCloseShareModal} />
       )}
+      {isShareModalOpenAndBegin && (
+        <ShareModal
+          closeShareModal={handleCloseShareModal}
+          withBeginButton
+          handleStopClick={handleStopClick}
+        />
+      )}
     </div>
-    
   );
 };
 

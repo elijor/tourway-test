@@ -22,7 +22,6 @@ const Questionnare = () => {
         console.error("error fetching questions:", error);
       } else {
         setQuestions(data);
-        console.log(data);
       }
     };
 
@@ -35,7 +34,7 @@ const Questionnare = () => {
       <div className="backButton">
         <CircleButton
           icon={<FontAwesomeIcon icon={faX} />}
-          bgColor="#DFF3F4"
+          bgColor="#D0E4F6"
           iconColor="#0BA3A8"
           onClick={() => navigate("../university/choose-tour")}
         />
